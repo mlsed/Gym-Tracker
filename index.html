@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0d0f11">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Gym">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Gym Tracker</title>
+<style>
+:root{--bg:#0d0f11;--card:#171a1e;--text:#f1f3f5;--mut:#8b949e;--acc:#22c55e;--accT:#04140a;--line:#262b31;--blue:#60a5fa;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);background:var(--bg)}
+*{box-sizing:border-box}
+body{margin:0 auto;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;max-width:520px;padding:14px 14px 40px}
+.card{background:var(--card);border-radius:16px;padding:14px;margin-bottom:12px;border:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.nav b{font-size:20px}
+button{font-family:inherit}
+.nb,.btn{border:0;border-radius:12px;padding:10px 14px;font-size:15px;background:var(--line);color:var(--text);cursor:pointer}
+.btn.p{background:var(--acc);color:var(--accT);font-weight:600}
+.btn.d{color:#f87171}
+.stats{display:flex;gap:10px;margin-bottom:12px}
+.stat{flex:1;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--acc)}
+.stat span{font-size:12px;color:var(--mut)}
+.months{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.mini{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px;text-align:left;color:var(--text);cursor:pointer}
+.mini h4{margin:0 0 6px;font-size:13px;display:flex;justify-content:space-between}
+.mini h4 span{color:var(--acc)}
+.mg{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.mc{aspect-ratio:1;border-radius:3px;font-size:7px;color:var(--mut);display:flex;align-items:center;justify-content:center;position:relative}
+.mc.on{background:var(--acc);color:var(--accT);font-weight:700}
+.mc.w::after{content:"";position:absolute;right:0;top:0;width:4px;height:4px;border-radius:50%;background:var(--blue)}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center}
+.dow{font-size:11px;color:var(--mut)}
+.day{aspect-ratio:1;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--text);font-size:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;padding:0;gap:1px}
+.day.on{background:var(--acc);color:var(--accT);border-color:var(--acc);font-weight:700}
+.day.today{outline:2px solid var(--text);outline-offset:1px}
+.day small{font-size:9px;line-height:1;color:var(--blue);font-weight:600}
+.day.on small{color:var(--accT)}
+.day.empty{visibility:hidden}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.chip{border:1px solid var(--line);border-radius:999px;padding:9px 14px;font-size:14px;background:transparent;color:var(--text);cursor:pointer}
+.chip.on{background:var(--acc);color:var(--accT);border-color:var(--acc)}
+.row{display:flex;gap:8px;margin-top:10px;align-items:center}
+input{flex:1;min-width:0;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:12px;padding:12px;font-size:16px}
+.mut{color:var(--mut);font-size:13px}
+.item{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:14px;cursor:pointer}
+.item:first-of-type{border-top:0}
+.item .mut{text-align:right}
+.legend{display:flex;gap:14px;justify-content:center;font-size:12px;color:var(--mut);margin-bottom:8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--acc);margin-right:5px}
+.legend i.b{background:var(--blue);border-radius:50%}
+#sheet{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center;z-index:5}
+#sheet.show{display:flex}
+#sheet .in{background:var(--card);width:100%;max-width:520px;border-radius:20px 20px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px));border:1px solid var(--line)}
+svg{width:100%;height:auto;display:block}
+.nb:disabled{opacity:.25;cursor:default}
+.cat{border:1px solid var(--line);border-radius:14px;padding:10px;margin-top:10px}
+.cat .row{margin-top:6px}
+.cat .cn{font-weight:600}
+.btn.sm{padding:10px 12px}
+#sheet .in{max-height:88vh;overflow-y:auto}
+.item .mut{line-height:1.5}
+.ew{flex:0 0 78px!important;text-align:center}
+</style>
+</head>
+<body>
+<div id="yv">
+  <div class="nav"><button class="nb" id="yp">‹</button><b id="yt"></b><button class="nb" id="yn">›</button></div>
+  <div class="stats">
+    <div class="stat"><b id="sw">0</b><span>this week</span></div>
+    <div class="stat"><b id="sm">0</b><span>this month</span></div>
+    <div class="stat"><b id="sy">0</b><span id="syl">this year</span></div>
+  </div>
+  <div class="legend"><span><i></i>Gym day</span><span><i class="b"></i>Weight logged</span></div>
+  <div class="months" id="months"></div>
+  <div class="card" id="chartc"></div>
+</div>
+<div id="mv" style="display:none">
+  <div class="nav"><button class="nb" id="back">‹ Year</button><span></span></div>
+  <div class="card">
+    <div class="nav"><button class="nb" id="mp">‹</button><b id="mt"></b><button class="nb" id="mn">›</button></div>
+    <div class="grid" id="cal"></div>
+  </div>
+  <div class="card" id="log"></div>
+</div>
+<div id="sheet"><div class="in">
+  <b id="sd" style="font-size:18px"></b>
+  <div class="row"><button class="chip" id="gym" style="flex:1;padding:12px">🏋️ Went to the gym</button></div>
+  <div id="cats"></div>
+  <datalist id="catlist"></datalist><datalist id="exlist"></datalist>
+  <div class="row"><button class="chip" id="addc" style="flex:1">+ Add muscle group</button></div>
+  <div class="mut" style="margin-top:16px">Weight today (kg, optional)</div>
+  <div class="row"><input id="wv" type="number" inputmode="decimal" step="0.1" placeholder="e.g. 78.4"></div>
+  <div class="row" style="margin-top:16px"><button class="btn p" id="save" style="flex:1">Save</button><button class="btn d" id="del">Clear</button><button class="btn" id="cancel">Close</button></div>
+</div></div>
+<script>
+const $=id=>document.getElementById(id);
+const esc=t=>String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+let S={days:{},weights:{}};
+try{const r=localStorage.getItem("gymtracker");if(r)S=JSON.parse(r)}catch(e){}
+if(Array.isArray(S.weights)){const o={};S.weights.forEach(x=>o[x.d]=x.w);S.weights=o}
+S.days=S.days||{};S.weights=S.weights||{};
+Object.keys(S.days).forEach(k=>S.days[k]=(S.days[k]||[]).map(x=>typeof x==="string"?{m:x,ex:[]}:x));
+Object.values(S.days).forEach(cs=>cs.forEach(c=>c.ex=(c.ex||[]).map(e=>typeof e==="string"?{n:e,w:""}:e)));
+const persist=()=>{try{localStorage.setItem("gymtracker",JSON.stringify(S))}catch(e){}};
+const pad=n=>String(n).padStart(2,"0");
+const key=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const today=new Date(),TK=key(today),YMIN=2026;
+let Y=Math.max(today.getFullYear(),YMIN),M=today.getMonth(),sel=null,draft=[],gym=false;
+const mname=m=>new Date(2000,m,1).toLocaleDateString(undefined,{month:"long"});
+
+function renderYear(){
+  $("yt").textContent=Y;$("yp").disabled=Y<=YMIN;
+  let h="";
+  for(let m=0;m<12;m++){
+    const off=(new Date(Y,m,1).getDay()+6)%7,n=new Date(Y,m+1,0).getDate();
+    let c="",cnt=0;
+    for(let i=0;i<off;i++)c+='<div class="mc"></div>';
+    for(let d=1;d<=n;d++){
+      const k=Y+"-"+pad(m+1)+"-"+pad(d),on=S.days[k]!==undefined;if(on)cnt++;
+      c+=`<div class="mc${on?" on":""}${S.weights[k]?" w":""}">${d}</div>`;
+    }
+    h+=`<button class="mini" data-m="${m}"><h4>${mname(m)}<span>${cnt||""}</span></h4><div class="mg">${c}</div></button>`;
+  }
+  $("months").innerHTML=h;
+  document.querySelectorAll(".mini").forEach(b=>b.onclick=()=>{M=+b.dataset.m;showMonth()});
+  const ks=Object.keys(S.days),mon=new Date(today);mon.setDate(today.getDate()-((today.getDay()+6)%7));mon.setHours(0,0,0,0);
+  $("sw").textContent=ks.filter(k=>new Date(k+"T00:00")>=mon).length;
+  $("sm").textContent=ks.filter(k=>k.startsWith(today.getFullYear()+"-"+pad(today.getMonth()+1))).length;
+  $("sy").textContent=ks.filter(k=>k.startsWith(String(Y))).length;
+  $("syl").textContent=Y===today.getFullYear()?"this year":"in "+Y;
+  const w=Object.entries(S.weights).filter(([k])=>k.startsWith(Y+"-")).sort((a,b)=>a[0]<b[0]?-1:1);
+  if(w.length>1){
+    const vs=w.map(x=>x[1]),mn=Math.min(...vs)-1,mx=Math.max(...vs)+1,W=320,H=130,p=20;
+    const pts=w.map((x,i)=>[p+i*(W-2*p)/(w.length-1),H-p-(x[1]-mn)/(mx-mn)*(H-2*p)]);
+    const lab=i=>`<text x="${pts[i][0]}" y="${pts[i][1]-8}" font-size="10" text-anchor="middle" fill="var(--mut)">${vs[i]}</text>`;
+    $("chartc").innerHTML=`<b>Weight in ${Y}</b><svg viewBox="0 0 ${W} ${H}"><polyline fill="none" stroke="var(--blue)" stroke-width="2.5" points="${pts.map(q=>q.join(",")).join(" ")}"/>${pts.map(q=>`<circle cx="${q[0]}" cy="${q[1]}" r="3.5" fill="var(--blue)"/>`).join("")}${lab(0)}${lab(pts.length-1)}</svg>`;
+  }else $("chartc").innerHTML='<span class="mut">Log your weight on a few days to see your trend here.</span>';
+}
+
+function showMonth(){$("yv").style.display="none";$("mv").style.display="";renderMonth();window.scrollTo(0,0)}
+function renderMonth(){
+  $("mt").textContent=mname(M)+" "+Y;$("mp").disabled=Y<=YMIN&&M===0;
+  let h=["M","T","W","T","F","S","S"].map(d=>`<div class="dow">${d}</div>`).join("");
+  const off=(new Date(Y,M,1).getDay()+6)%7,n=new Date(Y,M+1,0).getDate();
+  for(let i=0;i<off;i++)h+='<div class="day empty"></div>';
+  for(let d=1;d<=n;d++){
+    const k=Y+"-"+pad(M+1)+"-"+pad(d),on=S.days[k]!==undefined,w=S.weights[k];
+    h+=`<button class="day${on?" on":""}${k===TK?" today":""}" data-k="${k}">${d}${w?`<small>${w}</small>`:""}</button>`;
+  }
+  $("cal").innerHTML=h;
+  document.querySelectorAll(".day[data-k]").forEach(b=>b.onclick=()=>openSheet(b.dataset.k));
+  const pre=Y+"-"+pad(M+1)+"-";
+  const ks=[...new Set([...Object.keys(S.days),...Object.keys(S.weights)])].filter(k=>k.startsWith(pre)).sort().reverse();
+  const cnt=Object.keys(S.days).filter(k=>k.startsWith(pre)).length;
+  $("log").innerHTML=`<b>${cnt} gym day${cnt===1?"":"s"} in ${mname(M)}</b><div style="margin-top:8px">`+(ks.length?ks.map(k=>{
+    const d=new Date(k+"T00:00").toLocaleDateString(undefined,{weekday:"short",day:"numeric"}),cs=S.days[k];
+    const parts=[];
+    if(cs)cs.forEach(c=>parts.push(`<b style="color:var(--text)">${esc(c.m)}</b>${c.ex.length?": "+esc(c.ex.map(e=>e.n+(e.w?" "+e.w+"kg":"")).join(", ")):""}`));
+    if(S.weights[k])parts.push(S.weights[k]+" kg");
+    return `<div class="item" data-k="${k}"><span>${d}${cs?" 🏋️":""}</span><span class="mut">${parts.join("<br>")}</span></div>`}).join(""):'<span class="mut">Nothing logged yet. Tap a day above.</span>')+"</div>";
+  document.querySelectorAll(".item[data-k]").forEach(b=>b.onclick=()=>openSheet(b.dataset.k));
+}
+
+function setGym(v){gym=v;$("gym").classList.toggle("on",v)}
+function lastW(n,before){
+  n=(n||"").trim().toLowerCase();if(!n)return"";
+  for(const k of Object.keys(S.days).filter(k=>k<before).sort().reverse())for(const c of S.days[k]){const e=c.ex.find(e=>e.n.trim().toLowerCase()===n&&e.w);if(e)return e.w}
+  return"";
+}
+function renderDraft(focus){
+  $("cats").innerHTML=draft.map((c,i)=>`<div class="cat"><div class="row"><input class="cn" list="catlist" data-i="${i}" placeholder="Muscle group (e.g. Chest)" value="${esc(c.m)}"><button class="btn d sm" data-rc="${i}">✕</button></div>${c.ex.map((e,j)=>`<div class="row"><input class="ce" data-i="${i}" data-j="${j}" list="exlist" placeholder="Exercise (e.g. Bench press)" value="${esc(e.n)}"><input class="ew" type="number" inputmode="decimal" step="0.5" data-i="${i}" data-j="${j}" placeholder="${lastW(e.n,sel)?"last "+lastW(e.n,sel):"kg"}" value="${e.w===""?"":e.w}"><button class="btn d sm" data-re="${i},${j}">✕</button></div>`).join("")}<button class="chip" data-ae="${i}" style="margin-top:8px">+ Exercise</button></div>`).join("");
+  document.querySelectorAll(".cn").forEach(x=>x.oninput=()=>{draft[+x.dataset.i].m=x.value;setGym(true)});
+  document.querySelectorAll(".ce").forEach(x=>{x.oninput=()=>{draft[+x.dataset.i].ex[+x.dataset.j].n=x.value;setGym(true)};x.onchange=()=>{const w=x.parentNode.querySelector(".ew"),l=lastW(x.value,sel);w.placeholder=l?"last "+l:"kg"}});
+  document.querySelectorAll(".ew").forEach(x=>x.oninput=()=>{draft[+x.dataset.i].ex[+x.dataset.j].w=x.value;setGym(true)});
+  document.querySelectorAll("[data-rc]").forEach(b=>b.onclick=()=>{draft.splice(+b.dataset.rc,1);renderDraft()});
+  document.querySelectorAll("[data-re]").forEach(b=>b.onclick=()=>{const[i,j]=b.dataset.re.split(",").map(Number);draft[i].ex.splice(j,1);renderDraft()});
+  document.querySelectorAll("[data-ae]").forEach(b=>b.onclick=()=>{const i=+b.dataset.ae;draft[i].ex.push({n:"",w:""});renderDraft(["ce",i])});
+  if(focus){const l=[...document.querySelectorAll("."+focus[0]+(focus[1]!==undefined?"[data-i='"+focus[1]+"']":""))].pop();if(l)l.focus()}
+}
+function openSheet(k){
+  sel=k;draft=JSON.parse(JSON.stringify(S.days[k]||[]));setGym(S.days[k]!==undefined);
+  $("sd").textContent=new Date(k+"T00:00").toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long"});
+  const names=[...new Set(Object.values(S.days).flat().map(c=>c.m).filter(Boolean))];
+  $("catlist").innerHTML=names.map(n=>`<option value="${esc(n)}">`).join("");
+  $("exlist").innerHTML=[...new Set(Object.values(S.days).flat().flatMap(c=>c.ex.map(e=>e.n)).filter(Boolean))].map(n=>`<option value="${esc(n)}">`).join("");
+  $("wv").value=S.weights[k]||"";
+  renderDraft();
+  $("sheet").classList.add("show");
+}
+const close=()=>$("sheet").classList.remove("show");
+const refresh=()=>{persist();close();renderYear();renderMonth()};
+$("gym").onclick=()=>setGym(!gym);
+$("addc").onclick=()=>{draft.push({m:"",ex:[{n:"",w:""}]});setGym(true);renderDraft(["cn"])};
+$("cancel").onclick=close;
+$("sheet").onclick=e=>{if(e.target.id==="sheet")close()};
+$("save").onclick=()=>{
+  const cl=draft.map(c=>({m:c.m.trim(),ex:c.ex.map(x=>({n:x.n.trim(),w:parseFloat(String(x.w).replace(",","."))||""})).filter(x=>x.n||x.w).map(x=>({n:x.n||"Exercise",w:x.w}))})).filter(c=>c.m||c.ex.length).map(c=>({m:c.m||"Workout",ex:c.ex}));
+  if(gym||cl.length)S.days[sel]=cl;else delete S.days[sel];
+  const v=parseFloat($("wv").value.replace(",","."));
+  if(v>0)S.weights[sel]=v;else delete S.weights[sel];
+  refresh();
+};
+$("del").onclick=()=>{delete S.days[sel];delete S.weights[sel];refresh()};
+$("yp").onclick=()=>{if(Y>YMIN){Y--;renderYear()}};$("yn").onclick=()=>{Y++;renderYear()};
+$("back").onclick=()=>{$("mv").style.display="none";$("yv").style.display="";renderYear()};
+const shift=d=>{M+=d;if(M<0){M=11;Y--}if(M>11){M=0;Y++}if(Y<YMIN){Y=YMIN;M=0}renderMonth()};
+$("mp").onclick=()=>shift(-1);$("mn").onclick=()=>shift(1);
+renderYear();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
